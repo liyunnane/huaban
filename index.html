@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script>
+        window.onload=function () {
+            var zhezhao=$('.canvaszhezhao');
+            var xp=$('.xp');
+            var canvas=$('canvas');
+            var cobj=canvas[0].getContext("2d");
+            var obj=new shape(canvas[0],cobj,zhezhao[0]);
+            canvas.css({"cursor":"crosshair"});
+            $(".xian").click(function () {
+                $(this).parent().siblings("p").text($(this).text());
+                obj.type="line";
+                obj.draw();
+            });
+            $(".xuxian").click(function () {
+                $(this).parent().siblings("p").text($(this).text());
+                obj.type="xuline";
+                obj.draw();
+            });
+            $(".qianbi").click(function () {
+                obj.type="qianbi";
+                obj.draw();
+            });
+            $(".bian").click(function () {
+                obj.biannum=prompt("请输入边数");
+                while(obj.biannum<3){
+                  obj.biannum=prompt("请输入合法边数");
+                }
+                obj.type="bian";
+                obj.draw();
+            });
+            $(".jiao").click(function () {
+                obj.biannum=prompt("请输入边数");
+                while(obj.biannum<3){
+                  obj.biannum=prompt("请输入合法边数");
+                }
+                obj.type="jiao";
+                obj.draw();
+            });
+            $(".color").change(function () {
+                obj.strokeStyle=$(this).val();
+                obj.draw();
+            });
+            $(".opacity").change(function () {
+                obj.opacity=$(this).val();
+                obj.draw();
+            });
+            $(".bgcolor").change(function () {
+                obj.fillStyle=$(this).val();
+                obj.draw();
+            });
+            $(".canvascolor").change(function () {
+               canvas.css({"backgroundColor":$(this).val()});
+            });
+            $(".xiancu").change(function () {
+                obj.strokewidth=$(this).val();
+                obj.draw();
+            });
+            $(".jiandu").change(function () {
+                obj.jiandu=$(this).val();
+                obj.draw();
+            });
+            $(".xudu").change(function () {
+                obj.xu=$(this).val();
+                obj.draw();
+            });
+            $(".juxing").click(function () {
+                obj.type="rect";
+                obj.draw();
+            });
+            $(".fill").click(function () {
+                $(this).parent().siblings("p").text($(this).text());
+                obj.style="fill";
+                obj.draw();
+            });
+            $(".stroke").click(function () {
+                $(this).parent().siblings("p").text($(this).text());
+                obj.style="stroke";
+                obj.draw();
+            });
+            $(".xiangpili>div>div:not(.xpsz)").click(function () {
+                var size=parseInt($(this).attr("data-type"));
+                obj.xpsize=size;
+                obj.xiangpi(xp);
+
+            });
+            $(".xiangpili .xpsz input").change(function () {
+                var size=parseInt($(this).val());
+                obj.xpsize=size;
+                obj.xiangpi(xp);
+
+            });
+            $(".yuan").click(function () {
+                obj.type="yuan";
+                obj.draw();
+            });
+            $(".clear").click(function () {
+                cobj.clearRect(0,0,canvas[0].width,canvas[0].height);
+                obj.history=[];
+            });
+            $(".back").click(function () {
+                    obj.jilunum++;
+                if(obj.jilunum<=obj.history.length){
+                    obj.back();
+                }else{
+                    obj.jilunum=obj.history.length
+                }
+            });
+            $(".go").click(function () {
+
+                if(obj.jilunum>1){
+                 obj.jilunum--;
+                    obj.go();
+                }
+
+            });
+            $('li:not(.xiangpili)').on( "click " ,$("p,label input"),function () {
+                if($('.xp').is(".xp:visible")){
+
+                    $('.xp').hide();
+                    obj.zhezhao.onmousemove=null;
+                }
+
+            });
+            $('li:not(.checkli)').on( "click " ,$("p,label input"),function () {
+
+                if($('.checkbox').is(".checkbox:visible")){
+                    obj.zhezhao.flag=false;
+                    obj.history.push(cobj.getImageData(0,0,obj.obj.width,obj.obj.height));
+
+                $('.checkbox').hide();
+                obj.zhezhao.onmousemove=null;
+                }
+            });
+
+
+            $('.moshi').mouseover(function () {
+                $(this).children('div').show();
+
+            });
+            $('.saveimg').click(function () {
+                obj.save();
+            });
+            var checkbox=$('.checkbox')
+            $('.check').click(function () {
+                obj.check(checkbox);
+            });
+            $('.newimg').click(function () {
+                if(confirm("要保存图片吗？")){
+                    obj.save();
+                }
+                cobj.clearRect(0,0,canvas[0].width,canvas[0].height);
+                obj.history=[];
+            });
+//            $('.moshi>div').mouseout(function () {
+//                $(this).hide();
+//            })
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <ul>
+            <li>
+                <p class="clear">文件</p>
+                <div>
+                    <div class="newimg">新建</div>
+                    <div class="saveimg">保存</div>
+                </div>
+            </li>
+            <li><p class="clear">清除</p></li>
+            <li><p class="back">后退</p></li>
+            <li><p class="go">撤销后退</p></li>
+            <li class="moshi">
+                <p>路径</p>
+                <div>
+                    <div class="fill">形状</div>
+                    <div class="stroke">路径</div>
+                </div>
+            </li>
+            <li class="checkli"><p class="check">选择</p></li>
+            <li><label>画板颜色：</label><input type="color" class="canvascolor"></li>
+        </ul>
+    </header>
+    <aside>
+        <ul>
+            <li>
+                <p>选择线段</p>
+                <div>
+                <div class="xian">直线</div>
+                <div class="xuxian">虚线</div>
+                </div>
+            </li>
+            <li>
+                <p class="qianbi">铅笔(可画形状)</p></li>
+            <li><label>线颜色：</label><input type="color" class="color"></li>
+            <li><label>面颜色：</label><input type="color" class="bgcolor"></li>
+            <li>
+                <p class="bian">多边形</p>
+            </li>
+            <li>
+                <p class="jiao">多角形</p>
+            </li>
+            <li>
+                <p class="juxing">矩形</p>
+            </li>
+            <li>
+                <p class="yuan">圆</p>
+            </li>
+            <li class="xiangpili">
+                <p class="xiangpi">橡皮</p>
+                <div>
+                    <div data-type="10">小</div>
+                    <div data-type="20">中</div>
+                    <div data-type="30">大</div>
+                    <div class="xpsz"><input type="number" class="xiangpisize" value="10" min="1"></div>
+                </div>
+            </li>
+            <li><label>线宽：</label><input type="number" class="xiancu" value="1" min="1"></li>
+            <li><label>虚线宽：</label><input type="number" class="xudu" value="4" min="0.1" step="1"></li>
+            <li><label>角尖：</label><input type="number" class="jiandu" value="3" min="1" step="0.1"></li>
+            <li><label>透明度：</label><input type="number" class="opacity" value="1" min="0" max="1" step="0.1"></li>
+        </ul>
+    </aside>
+    <div class="canvasbox">
+        <canvas width="1000" height="800"></canvas>
+        <div class="canvaszhezhao">
+        </div>
+            <div class="xp"></div>
+            <div class="checkbox"></div>
+    </div>
+    <footer></footer>
+
+</body>
+<script src="js/jquery.js"></script>
+<script src="js/shape.js"></script>
+</html>
